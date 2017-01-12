@@ -22,17 +22,17 @@ def init_blocks():
 
 
 def create_food():
-    pos = Point(randint(0, MAP_HEIGHT), randint(0, MAP_WIDTH))
+    pos = Point(randint(0, MAP_HEIGHT - 1), randint(0, MAP_WIDTH - 1))
     while map_blocks[pos.x][pos.y].type != BlockType.Normal:
-        pos = Point(randint(0, MAP_HEIGHT), randint(0, MAP_WIDTH))
+        pos = Point(randint(0, MAP_HEIGHT - 1), randint(0, MAP_WIDTH - 1))
     map_blocks[pos.x][pos.y].type = BlockType.Food
     return map_blocks[pos.x][pos.y]
 
 
 def create_snake():
-    pos = Point(randint(0, MAP_HEIGHT), randint(0, MAP_WIDTH))
+    pos = Point(randint(0, MAP_HEIGHT - 1), randint(0, MAP_WIDTH - 1))
     while map_blocks[pos.x][pos.y].type != BlockType.Normal:
-        pos = Point(randint(0, MAP_HEIGHT), randint(0, MAP_WIDTH))
+        pos = Point(randint(0, MAP_HEIGHT - 1), randint(0, MAP_WIDTH - 1))
     map_blocks[pos.x][pos.y].type = BlockType.Snake
     new_snake = Snake(map_blocks[pos.x][pos.y])
 
