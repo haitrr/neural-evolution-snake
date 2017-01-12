@@ -45,20 +45,36 @@ def draw_game():
                 pass
             elif block.type == BlockType.Food:
                 game_canvas.create_rectangle(
-                    (block.position.x, block.position.y), (block.position.x + BLOCK_SIZE, block.position.y + BLOCK_SIZE), fill='red', outline='black')
+                    (block.position.x, block.position.y),
+                    (block.position.x + BLOCK_SIZE,
+                     block.position.y + BLOCK_SIZE),
+                    fill='red',
+                    outline='black')
             elif block.type == BlockType.Wall:
                 game_canvas.create_rectangle(
-                    (block.position.x, block.position.y), (block.position.x + BLOCK_SIZE, block.position.y + BLOCK_SIZE), fill='blue', outline='black')
+                    (block.position.x, block.position.y),
+                    (block.position.x + BLOCK_SIZE,
+                     block.position.y + BLOCK_SIZE),
+                    fill='blue',
+                    outline='black')
             else:
                 game_canvas.create_rectangle(
-                    (block.position.x, block.position.y), (block.position.x + BLOCK_SIZE, block.position.y + BLOCK_SIZE), fill='white', outline='black')
+                    (block.position.x, block.position.y),
+                    (block.position.x + BLOCK_SIZE,
+                     block.position.y + BLOCK_SIZE),
+                    fill='white',
+                    outline='black')
+
+
 root = Tk()
 root.resizable(width=False, height=False)
 root.grid()
 
-
-game_canvas = Canvas(root, width=MAP_WIDTH * BLOCK_SIZE,
-                     height=MAP_HEIGHT * BLOCK_SIZE, background="black")
+game_canvas = Canvas(
+    root,
+    width=MAP_WIDTH * BLOCK_SIZE,
+    height=MAP_HEIGHT * BLOCK_SIZE,
+    background="black")
 game_canvas.grid(row=0, column=0)
 
 map_blocks = init_blocks()

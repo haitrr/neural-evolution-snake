@@ -7,8 +7,8 @@ class BlockType(Enum):
     Wall = -2
     Snake = 1
 
-class Block:
 
+class Block:
     def __init__(self, position):
         self.position = position
         self.type = BlockType.Normal

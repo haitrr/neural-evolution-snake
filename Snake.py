@@ -10,7 +10,6 @@ class Direction(Enum):
 
 
 class Snake:
-
     def __init__(self, head):
         self.body = []
         self.body.append(head)
