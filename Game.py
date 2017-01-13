@@ -65,7 +65,6 @@ def draw_game():
                     fill='white',
                     outline='black')
 
-
 root = Tk()
 root.resizable(width=False, height=False)
 root.grid()
