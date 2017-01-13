@@ -6,6 +6,7 @@ from Block import *
 from Point import Point
 from random import randint
 from Snake import *
+import time
 
 
 def init_blocks():
@@ -34,11 +35,20 @@ def create_snake():
     while map_blocks[pos.x][pos.y].type != BlockType.Normal:
         pos = Point(randint(0, MAP_HEIGHT - 1), randint(0, MAP_WIDTH - 1))
     map_blocks[pos.x][pos.y].type = BlockType.Snake
-    new_snake = Snake(map_blocks[pos.x][pos.y])
+    new_snake = Snake(map_blocks, map_blocks[pos.x][pos.y])
+    return new_snake
+
+
+def update():
+    for snake in snakes:
+        snake.move()
+        draw_game()
+        root.update()
+        time.sleep(1)
 
 
 def draw_game():
-    game_canvas.delete()
+    game_canvas.delete("all")
     for blocks in map_blocks:
         for block in blocks:
             if block.type == BlockType.Normal:
@@ -65,9 +75,17 @@ def draw_game():
                     fill='white',
                     outline='black')
 
+
+def start_game():
+    while True:
+        update()
+
+
 root = Tk()
 root.resizable(width=False, height=False)
 root.grid()
+start_game_button = Button(root, text="Start Game", command=start_game)
+start_game_button.grid(row=0, column=1)
 
 game_canvas = Canvas(
     root,
@@ -78,8 +96,8 @@ game_canvas.grid(row=0, column=0)
 
 map_blocks = init_blocks()
 food = create_food()
-snake = create_snake()
-draw_game()
+snakes = []
+snakes.append(create_snake())
 
 root.title("Snake evolution")
 root.mainloop()
