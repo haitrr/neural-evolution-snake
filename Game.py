@@ -30,12 +30,12 @@ def create_food():
     return map_blocks[pos.x][pos.y]
 
 
-def create_snake():
+def create_snake(code):
     pos = Point(randint(0, MAP_HEIGHT - 1), randint(0, MAP_WIDTH - 1))
     while map_blocks[pos.x][pos.y].type != BlockType.Normal:
         pos = Point(randint(0, MAP_HEIGHT - 1), randint(0, MAP_WIDTH - 1))
-    map_blocks[pos.x][pos.y].type = BlockType.Snake
-    new_snake = Snake(map_blocks, map_blocks[pos.x][pos.y])
+    head = map_blocks[pos.x][pos.y]
+    new_snake = Snake(map_blocks, head, code)
     return new_snake
 
 
@@ -43,8 +43,13 @@ def update():
     for snake in snakes:
         snake.move()
         draw_game()
+        if snake.dead:
+            code = snake.code
+            snakes.remove(snake)
+            del snake
+            snakes.insert(code, create_snake(code))
         root.update()
-        time.sleep(1)
+        time.sleep(0.05)
 
 
 def draw_game():
@@ -76,6 +81,13 @@ def draw_game():
                     outline='black')
 
 
+def init_population():
+    population = []
+    for i in range(POPULATION_SIZE):
+        population.append(create_snake(i))
+    return population
+
+
 def start_game():
     while True:
         update()
@@ -85,7 +97,7 @@ root = Tk()
 root.resizable(width=False, height=False)
 root.grid()
 start_game_button = Button(root, text="Start Game", command=start_game)
-start_game_button.grid(row=0, column=1)
+start_game_button.grid(row=1, column=0)
 
 game_canvas = Canvas(
     root,
@@ -96,8 +108,7 @@ game_canvas.grid(row=0, column=0)
 
 map_blocks = init_blocks()
 food = create_food()
-snakes = []
-snakes.append(create_snake())
+snakes = init_population()
 
 root.title("Snake evolution")
 root.mainloop()

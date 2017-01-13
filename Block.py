@@ -2,10 +2,9 @@ from enum import Enum
 
 
 class BlockType(Enum):
-    Normal = 0
-    Food = -1
-    Wall = -2
-    Snake = 1
+    Normal = -1
+    Food = -2
+    Wall = -3
 
 
 class Block:
