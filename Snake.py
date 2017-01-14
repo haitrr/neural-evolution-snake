@@ -6,15 +6,18 @@ import numpy as np
 
 
 class Snake:
-    def __init__(self, game_map, head, code):
+    def __init__(self, game_map, head, code, gen):
         self.game_map = game_map
-        head.type = code
+        head.type = BlockType.Snake
+        head.owners.append(code)
         self.body = []
         self.body.append(head)
         self.direction = RIGHT
         self.dead = False
         self.code = code
-        self.gen = NeuralNetwork(GEN_SIZE)
+        self.gen = gen
+        self.fitness = 0
+        self.life_time = 0
 
     def get_input(self):
         head = self.body[0]
@@ -33,13 +36,8 @@ class Snake:
                     j = j - MAP_WIDTH
                 if j < 0:
                     j = j + MAP_WIDTH
-                if self.game_map[i][j].type is BlockType:
-                    input_vector.append(self.game_map[i][j].type.value)
-                elif self.game_map[i][j].type == self.code:
-                    input_vector.append(0)
-                else:
-                    input_vector.append(BlockType.Normal.value)
-        return np.reshape(input_vector, (INPUT_SIZE * INPUT_SIZE * 4, 1))
+                input_vector.append(self.game_map[i][j].type.value)
+        return np.reshape(input_vector, (GEN_SIZE[0], 1))
 
     def turn(self, x):
         """
@@ -76,12 +74,21 @@ class Snake:
         else:
             print("ERROR")
 
-    def move(self):
+    def get_turn(self):
         input_vector = self.get_input()
         output = self.gen.feed_forward(input_vector)
         self.turn(output.argmax())
+
+    def move(self):
+        if self.dead:
+            return
+
+        self.get_turn()
         head = self.body[0]
-        to_pos = [int(head.position.x / BLOCK_SIZE), int(head.position.y / BLOCK_SIZE)]
+        to_pos = [
+            int(head.position.x / BLOCK_SIZE),
+            int(head.position.y / BLOCK_SIZE)
+        ]
         to_pos[0] = to_pos[0] + self.direction[0]
         if to_pos[0] >= MAP_HEIGHT:
             to_pos[0] = to_pos[0] - MAP_HEIGHT
@@ -93,24 +100,31 @@ class Snake:
         if to_pos[1] < 0:
             to_pos[1] = to_pos[1] + MAP_WIDTH
         to = self.game_map[to_pos[0]][to_pos[1]]
+        self.life_time += 1
         if to.type == BlockType.Normal:
-            to.type = self.code
+            to.type = BlockType.Snake
+            to.owners.append(self.code)
             self.body = [to] + self.body
-            self.body[-1].type = BlockType.Normal
+            self.body[-1].remove_owner(self.code)
             self.body.pop()
         elif to.type == BlockType.Wall:
             self.die()
         elif to.type == BlockType.Food:
-            to.type = self.code
-            self.body.append(0, to)
-        elif to.type == self.code:
+            to.type = BlockType.Snake
+            to.owners.append(self.code)
+            self.body.insert(0, to)
+        elif self.code in to.owners:
             self.die()
         else:
-            pass
+            to.owners.append(self.code)
+            self.body = [to] + self.body
+            self.body[-1].remove_owner(self.code)
+            self.body.pop()
 
     def die(self):
+        self.fitness = len(self.body) + self.life_time / LIFE_TIME
         for block in self.body:
-            block.type = BlockType.Normal
-            self.direction = STOP
-            self.body.clear()
-            self.dead = True
+            block.remove_owner(self.code)
+        self.body.clear()
+        self.direction = STOP
+        self.dead = True
